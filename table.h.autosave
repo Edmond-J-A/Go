@@ -67,6 +67,7 @@ public:
     void Undo();
     void Clean();
     void Eat(int x,int y);
+    std::vector<int> AIMove();
     std::vector<std::vector<int>> GetTable();
 };
 #endif // TABLE_H

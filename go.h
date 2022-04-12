@@ -23,11 +23,12 @@ private slots:
     //收到消息触发槽
     void ClientRecvData();
     void on_pushButton_3_clicked();
-    void on_moveButton_clicked();
+    void on_moveButtonclicked();
     void on_pushButton_2_clicked();
 
-private:
 
+private:
+    QSoundEffect* buttonSound;
     Table *table;
     Ui::Go *ui;
     int mode=0;

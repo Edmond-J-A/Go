@@ -1,12 +1,15 @@
 #include "go.h"
 #include "ui_go.h"
-
+static int roun=1;
 Go::Go(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::Go)
 {
     ui->setupUi(this);
     repaint();
+    buttonSound=new QSoundEffect();
+    buttonSound->setSource(QUrl::fromLocalFile(":/res/down.WAV"));
+    buttonSound->setLoopCount(1);
     ui->label->setVisible(0);
     ui->label_2->setVisible(0);
     ui->label_3->setVisible(0);
@@ -19,6 +22,7 @@ Go::~Go()
     delete ui;
     delete clientSocket;
     delete table;
+    delete buttonSound;
 }
 
 void Go::paintEvent(QPaintEvent *event){
@@ -112,7 +116,7 @@ void Go::ClientRecvData()
         for(;i<get.size();i++){
             y=y*10+get[i]-'0';
         }
-        table->Move(p,x,y);
+        table->Move(x,y);
     }
 }
 
@@ -130,7 +134,7 @@ void Go::on_pushButton_3_clicked()
     repaint();
 }
 
-void Go::on_moveButton_clicked(){                   //本地
+void Go::on_moveButtonclicked(){                   //本地
     QPushButton *pb=qobject_cast<QPushButton *>(sender());
     std::string getName=pb->accessibleName().toStdString();
     int x=0,y=0;
@@ -145,10 +149,12 @@ void Go::on_moveButton_clicked(){                   //本地
     for(;i<getName.size();i++){
         y=y*10+getName[i]-'0';
     }
-    table->Move(1,x,y);
+    table->Move(x,y);
+    buttonSound->play();
 }
 
 void Go::on_pushButton_2_clicked()
 {
     table->Clean();
 }
+
