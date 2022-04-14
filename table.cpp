@@ -3,11 +3,15 @@ bool Table::Move(int x,int y){
     if(Check(x,y)){
         map[x][y]=round;
         if(round%2==0){                     //白棋
+            lastwx=x;
+            lastwy=y;
             block[x][y]->setStyleSheet(
                         "background-color:rgba(0, 0, 0,0);"
                         "background-image: url(:/res/white.png);"
                         );
         }else{                              //黑棋
+            lastbx=x;
+            lastby=y;
             block[x][y]->setStyleSheet(
                         "background-color:rgba(0, 0, 0,0);"
                         "background-image: url(:/res/black.png);"
@@ -80,17 +84,14 @@ void Table::Eat(int x,int y){
     std::stack<std::pair<int,int>> s;
     std::vector<std::pair<int,int>> temp;
     int direction[4][2]={{1,0},{0,1},{-1,0},{0,-1}};
-
     for(auto d : direction){
         std::vector<std::vector<bool>>visitied(19,std::vector<bool>(19,0));
         visitied[x][y]=1;
         if(0<=x+d[0]&&x+d[0]<19&&y+d[1]<19&&0<=y+d[1]&&map[x+d[0]][y+d[1]]%2!=round%2){
             s.push(std::pair<int,int>(x+d[0],y+d[1]));
             temp.push_back(std::pair<int,int>(x+d[0],y+d[1]));
-            qDebug()<<"put:";
-            qDebug()<<x+d[0]<<","<<y+d[1]<<endl;
         }
-        while(s.size()!=0){               //dfs   TODO : working
+        while(s.size()!=0){               //dfs
             int x2=s.top().first;
             int y2=s.top().second;
             s.pop();
@@ -111,17 +112,21 @@ void Table::Eat(int x,int y){
                 }
             }
         }
-        if(temp.size()!=0){
-            qDebug()<<"eat:";
-        }
         for(int i=0;i<temp.size();i++){
             map[temp[i].first][temp[i].second]=0;
-            qDebug()<<temp[i].first<<","<<temp[i].second;
         }
     }
 }
 
 bool Table::Check(int x,int y){
+    if(x<0||x>=19||y<0||y>=19){
+        return false;
+    }
+    if(round%2==1&&lastbx==x&&lastby==y){
+        return false;
+    }else if(round%2==0&&lastwx==x&&lastwy==y){
+        return false;
+    }
     if(map[x][y]==0){
         Eat(x,y);
         int direction[4][2]={{1,0},{0,1},{-1,0},{0,-1}};

@@ -27,11 +27,13 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
         go.cpp \
-    table.cpp
+    table.cpp \
+    ai.cpp
 
 HEADERS += \
         go.h \
-    table.h
+    table.h \
+    ai.h
 
 FORMS += \
         go.ui

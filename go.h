@@ -28,6 +28,7 @@ private slots:
 
 
 private:
+    AI ai;
     QSoundEffect* buttonSound;
     Table *table;
     Ui::Go *ui;

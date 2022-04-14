@@ -149,8 +149,17 @@ void Go::on_moveButtonclicked(){                   //本地
     for(;i<getName.size();i++){
         y=y*10+getName[i]-'0';
     }
-    table->Move(x,y);
-    buttonSound->play();
+    if(table->Move(x,y)){           //完成后需判定
+        buttonSound->play();
+        std::vector<int> aiMovement=ai.AIMove(x,y,table->GetTable(),table->Getlwx(),table->Getlwy());
+        if(aiMovement.size()!=0){
+            table->Move(aiMovement[0],aiMovement[1]);
+            buttonSound->play();
+        }else{
+            qDebug()<<"empty";
+        }
+    }
+
 }
 
 void Go::on_pushButton_2_clicked()

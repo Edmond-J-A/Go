@@ -3,11 +3,12 @@
 #include<vector>
 #include<QPushButton>
 #include<QWidget>
-#include<queue>
-#include<stack>
+#include"ai.h"
 #include<QSoundEffect>
 #include<QObject>
 #include<QDebug>
+
+
 #define XSTART 81
 #define YSTART 68
 #define WIDTH 33
@@ -16,7 +17,7 @@ class Table
     std::vector<std::vector<int>>map;
     std::vector<std::vector<QPushButton*>>block;
     int round=1;
-
+    int lastbx=-1,lastby=-1,lastwx=-1,lastwy=-1;
 public:
     Table(QWidget * parent) {
         map=std::vector<std::vector<int>>(19,std::vector<int>(19,0));
@@ -67,6 +68,12 @@ public:
     void Undo();
     void Clean();
     void Eat(int x,int y);
+    int Getlwx(){
+        return lastwx;
+    }
+    int Getlwy(){
+        return lastwy;
+    }
     std::vector<std::vector<int>> GetTable();
 };
 #endif // TABLE_H
