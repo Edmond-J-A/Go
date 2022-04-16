@@ -10,6 +10,7 @@ class AI{
     std::vector<std::vector<int>>map;
 public:
     AI(){
+        srand(time(0));
     }
 
     std::vector<int> AIMove(int x,int y,std::vector<std::vector<int>>m,int lx,int ly);

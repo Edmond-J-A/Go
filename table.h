@@ -75,5 +75,8 @@ public:
         return lastwy;
     }
     std::vector<std::vector<int>> GetTable();
+    int GetRound(){
+        return round;
+    }
 };
 #endif // TABLE_H

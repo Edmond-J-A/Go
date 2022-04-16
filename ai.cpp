@@ -39,7 +39,7 @@ std::vector<int> AI::AIMove(int x,int y,std::vector<std::vector<int>>m,int lx,in
                 continue;
             }
             std::vector<std::vector<int>>smap = map;
-            if(map[i][j]==0&&CheckForAI(i,j,smap,1)!=-1&&!isAnEye(i,j,smap)){//只剩一口气情况分类讨论未完成
+            if(map[i][j]==0&&CheckForAI(i,j,smap,1)!=-1&&!isAnEye(i,j,smap)){
                 int nowEat=EatForAI(i,j,smap,0);
                 if(nowEat>getscore)
                 {
@@ -91,6 +91,21 @@ std::vector<int> AI::AIMove(int x,int y,std::vector<std::vector<int>>m,int lx,in
     if(bestx.size()>0){
         int get = rand() % bestx.size();
         qDebug()<<"搜索"<<bestx[get]<< besty[get];
+        return {bestx[get], besty[get]};
+    }
+    bestx.clear();
+    besty.clear();
+    for(int i=0;i<19;i++){
+        for(int j=0;j<19;j++){
+            if(smap[i][j]==0&&CheckForAI(i,j,smap,1)!=-1&&!isAnEye(i,j,smap)){
+                bestx.push_back(i);
+                besty.push_back(j);
+            }
+        }
+    }
+    if(bestx.size()>0){
+        int get = rand() % bestx.size();
+        qDebug()<<"随机"<<bestx[get]<< besty[get];
         return {bestx[get], besty[get]};
     }
     return {};

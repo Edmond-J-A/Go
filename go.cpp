@@ -31,7 +31,7 @@ void Go::paintEvent(QPaintEvent *event){
         paint.setPen(Qt::NoPen);
         paint.setBrush(Qt::black);
         paint.drawRect(rect());
-    }else if(mode==1){
+    }else if(mode==1||mode==2){
         paint.setPen(Qt::NoPen);
         paint.setBrush(Qt::black);
         paint.drawRect(rect());
@@ -70,7 +70,6 @@ void Go::on_pushButton_clicked()
     }
     connect(clientSocket, SIGNAL(readyRead()), this, SLOT(ClientRecvData()));
 
-
 }
 
 void Go::ClientRecvData()
@@ -81,14 +80,14 @@ void Go::ClientRecvData()
     {
         if(result[i] == '\n')
         {
-            result.remove(i, result.size()-i-1);
+            result.resize(i);
             break;
         }
     }
-    qDebug()<<result;
+    qDebug()<<"result"<<result;
     std::string get=result.toStdString();
     if(mode==0&&get[0]=='d'){
-        mode=1;
+        mode=2;
         first=get[1]-'0';
         ui->pushButton->setVisible(0);
         ui->pushButton_3->setVisible(0);
@@ -97,7 +96,7 @@ void Go::ClientRecvData()
         ui->label_3->setVisible(1);
         table->ShowButton();
         repaint();
-    }else if(mode==1&&(get[0]=='M'||get[0]=='m')){
+    }else if(mode==2&&(get[0]=='M'||get[0]=='m')){
         int p;
         if(get[0]=='M'){
             p=1;
@@ -116,6 +115,8 @@ void Go::ClientRecvData()
         for(;i<get.size();i++){
             y=y*10+get[i]-'0';
         }
+        qDebug()<<x;
+        qDebug()<<y;
         table->Move(x,y);
     }
 }
@@ -134,29 +135,54 @@ void Go::on_pushButton_3_clicked()
     repaint();
 }
 
-void Go::on_moveButtonclicked(){                   //本地
-    QPushButton *pb=qobject_cast<QPushButton *>(sender());
-    std::string getName=pb->accessibleName().toStdString();
-    int x=0,y=0;
-    int i=0;
-    for(;i<getName.size();i++){
-        if(getName[i]==' '){
-            break;
+void Go::on_moveButtonclicked(){
+    if(mode==1){//本地
+        QPushButton *pb=qobject_cast<QPushButton *>(sender());
+        std::string getName=pb->accessibleName().toStdString();
+        int x=0,y=0;
+        int i=0;
+        for(;i<getName.size();i++){
+            if(getName[i]==' '){
+                break;
+            }
+            x=x*10+getName[i]-'0';
         }
-        x=x*10+getName[i]-'0';
-    }
-    i++;
-    for(;i<getName.size();i++){
-        y=y*10+getName[i]-'0';
-    }
-    if(table->Move(x,y)){           //完成后需判定
-        buttonSound->play();
-        std::vector<int> aiMovement=ai.AIMove(x,y,table->GetTable(),table->Getlwx(),table->Getlwy());
-        if(aiMovement.size()!=0){
-            table->Move(aiMovement[0],aiMovement[1]);
+        i++;
+        for(;i<getName.size();i++){
+            y=y*10+getName[i]-'0';
+        }
+        if(table->Move(x,y)){           //完成后需判定
             buttonSound->play();
-        }else{
-            qDebug()<<"empty";
+            std::vector<int> aiMovement=ai.AIMove(x,y,table->GetTable(),table->Getlwx(),table->Getlwy());
+            if(aiMovement.size()!=0){
+                table->Move(aiMovement[0],aiMovement[1]);
+                buttonSound->play();
+            }else{
+                qDebug()<<"empty";
+                QMessageBox::information(this,"message","end");
+            }
+        }
+    }else if(mode==2){
+        if(table->GetRound()%2==first){
+            QPushButton *pb=qobject_cast<QPushButton *>(sender());
+            std::string getName=pb->accessibleName().toStdString();
+            int x=0,y=0;
+            int i=0;
+            for(;i<getName.size();i++){
+                if(getName[i]==' '){
+                    break;
+                }
+                x=x*10+getName[i]-'0';
+            }
+            i++;
+            for(;i<getName.size();i++){
+                y=y*10+getName[i]-'0';
+            }
+            if(table->Move(x,y)){
+                QString mess="m"+QString::number(x)+" "+QString::number(y)+"\n";
+                const char* ch = mess.toStdString().c_str();
+                clientSocket->write(ch);
+            }
         }
     }
 
